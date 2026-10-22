@@ -1180,14 +1180,14 @@ var DEF=[
  {id:'bd2',g:'Vägg (nr = ritningens nummer)',n:'3b Verktygstavla',kind:'board',w:80,d:3,h:90,x:94,y:112,st:'Finns',note:'Underkant cirka 112 cm.'},
  {id:'cab',g:'Vägg (nr = ritningens nummer)',n:'4 Skruvskåp',kind:'cab',w:31,d:15,h:42,x:175,y:137,st:'Finns',note:'y = underkant (tolkat). Slutar 1 cm före pelaren.'},
  {id:'shA',g:'Vägg (nr = ritningens nummer)',n:'5 Hylla 200 × 40 (Elfa)',kind:'shelf',w:200,d:40,h:32,x:0,y:203,bk:5,t:1.8,wood:'furu',z0:0,railN:5,led:true,st:'Finns',note:'5 skenor à 32 cm med konsolerna längst ner. Hyllplan 1,8 cm limfogad furu ligger rakt på konsolerna. LED-list under. Konsolens höjd över skenans underkant (5 cm) är uppskattad.'},
- {id:'shB',g:'Vägg (nr = ritningens nummer)',n:'6 Hylla 250 × 50 (Elfa)',kind:'shelf',w:250,d:50,h:70,x:-23,y:250,bk:5,t:2.8,wood:'gran',z0:BEAM_P,railN:5,led:false,st:'Finns',note:'Skenor på överliggarens framsida, konsoler längst ner. Hyllplan 2,8 cm limfogad gran ligger rakt på konsolerna. Går 23 cm in på grannrutan.'},
+ {id:'shB',g:'Vägg (nr = ritningens nummer)',n:'6 Hylla 250 × 50 (Elfa)',kind:'shelf',w:250,d:50,h:70,x:-23,y:250,bk:5,t:2.8,wood:'gran',z0:BEAM_P,railN:5,led:true,st:'Finns',note:'LED-list under. Skenor på överliggarens framsida, konsoler längst ner. Hyllplan 2,8 cm limfogad gran ligger rakt på konsolerna. Går 23 cm in på grannrutan.'},
  {id:'out',g:'Befintligt i rutan',n:'Eluttag ovanför grannväggen',kind:'outlet',w:8,d:3,h:8,x:-12,y:130,st:'Befintligt',note:'Sitter på bakväggen ovanför den avgränsande 120 cm-väggen, alltså utanför din vägg. Ca 130 cm upp. Sidoläget är ungefärligt.'},
- {id:'rad',g:'Befintligt i rutan',n:'Radiator (mått okända, gissade)',kind:'rad',w:8,d:160,h:60,x:219,z:30,y:15,st:'Befintligt',note:'Sitter på fönsterväggen till höger. Mått är uppskattade från fotot. Justera när du har mätt.'},
- {id:'win',g:'Befintligt i rutan',n:'Fönster (höjder okända, gissade)',kind:'win',w:2,d:272,h:190,x:225,z:28,y:95,st:'Befintligt',note:'Fönsterbänk och överkant är gissade. Mät och ändra.'},
+ {id:'rad',g:'Befintligt i rutan',n:'Element',kind:'rad',w:10,d:235,h:91,x:217,z:65,y:10,st:'Befintligt',note:'Sitter på fönsterväggen till höger. Börjar 37 cm efter pelaren, löper till rutans slut (och vidare in i nästa ruta). 10 cm från golv till 10 cm under fönstret, sticker ut 10 cm.'},
+ {id:'win',g:'Befintligt i rutan',n:'Fönster',kind:'win',w:2,d:276,h:174,x:225,z:28,y:111,st:'Befintligt',note:'Två fönstersektioner à ca 138 cm. Underkant ca 111 cm över golvet, överkant gissad (285 cm).'},
  {id:'post',g:'Befintligt i rutan',n:'Ställningsben mot nästa ruta (gissad)',kind:'post',w:6,d:6,h:250,x:219,z:292,show:false,st:'Befintligt',note:'Dolt som standard. Slå på och flytta till rätt plats.'}
 ];
 var items=JSON.parse(JSON.stringify(DEF)), byId={};
-var state={view:'3d',dims:true,led:true,sel:null,matsOn:true,ceil:false};
+var state={view:'3d',dims:true,leds:{shA:true,shB:true},sel:null,matsOn:true,ceil:false};
 function load(){
   items=JSON.parse(JSON.stringify(DEF));
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)items.forEach(function(it){var o=s[it.id];if(o)for(var k in o)it[k]=o[k]})}catch(e){}
@@ -1326,7 +1326,7 @@ function buildItem(it){
       [-1.6,1.6].forEach(function(o){var c2=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.4,8),mat('#222'));c2.rotation.x=Math.PI/2;c2.position.set(it.x+it.w/2+o,it.y+it.h/2,it.d+.1);g.add(c2)});break}
     case 'win':{var gl2=mat('#a9d3ea',{transparent:true,opacity:.55,roughness:.1}),fr2=mat('#d9c9a3');
       g.add(box(2,it.h,it.d,gl2,it.x+1,it.y+it.h/2,it.z+it.d/2));
-      var nn=Math.max(1,Math.round(it.d/55));for(var q2=0;q2<=nn;q2++)g.add(box(3.5,it.h+4,4,fr2,it.x+1.2,it.y+it.h/2,it.z+q2*it.d/nn));
+      var nn=2;for(var q2=0;q2<=nn;q2++)g.add(box(3.5,it.h+4,4,fr2,it.x+1.2,it.y+it.h/2,it.z+q2*it.d/nn));
       [0,.55,1].forEach(function(f){g.add(box(3.5,4,it.d,fr2,it.x+1.2,it.y+it.h*f,it.z+it.d/2))});break}
     case 'rad':{g.add(box(it.w,it.h,it.d,mat('#d8b878',{roughness:.8}),it.x+it.w/2,it.y+it.h/2,it.z+it.d/2));
       for(var q=0;q<26;q++)g.add(box(it.w+.6,it.h-8,.8,mat('#bf9a55'),it.x+it.w/2,it.y+it.h/2,it.z+5+q*(it.d-10)/25));break}
@@ -1338,12 +1338,12 @@ function buildItem(it){
         g.add(box(3.2,it.h,1.5,wmt,px2,it.y+it.h/2,z0+.75));
         var bk=bracketMesh(it.d-1.5,bm);bk.position.set(px2+1,yb,z0+1.5);g.add(bk)}
       if(it.led){g.add(box(it.w-6,.8,1.6,mat('#fff',{emissive:'#ffe9b0',emissiveIntensity:1.4}),it.x+it.w/2,yb-.8,z0+it.d-3));
-        [.25,.75].forEach(function(f){var L=new THREE.PointLight(0xffe3a8,.55,170,1.6);L.position.set(it.x+it.w*f,yb-8,z0+it.d-8);L.userData.led=1;g.add(L)})}
+        [.25,.75].forEach(function(f){var L=new THREE.PointLight(0xffe3a8,.55,170,1.6);L.position.set(it.x+it.w*f,yb-8,z0+it.d-8);L.userData.led=it.id;g.add(L)})}
       break}
   }
   g.userData.id=it.id;g.traverse(function(o){o.userData.id=it.id});g.visible=!!it.show;
   return g}
-function updateLEDs(){scene.traverse(function(o){if(o.userData&&o.userData.led)o.visible=state.led});dirty=true}
+function updateLEDs(){scene.traverse(function(o){if(o.userData&&o.userData.led)o.visible=!!state.leds[o.userData.led]});dirty=true}
 function rebuildItem(id){var it=byId[id];if(root3d[id])scene.remove(root3d[id]);root3d[id]=buildItem(it);scene.add(root3d[id]);updateLEDs();dirty=true}
 function buildStatic(){
   var conc=mat('#a3a8ab',{roughness:.95}),conc2=mat('#8a9094',{roughness:.95}),gips=mat('#e1ddd0',{roughness:.9});
@@ -1494,7 +1494,7 @@ function bind2d(){
 /* ---------- Panel ---------- */
 var CF={bad:{},msgs:[]};
 var FIELDS={mat:[['x','x'],['z','z'],['rot','vinkel']],veh:[['x','mitt x'],['z','mitt z'],['hd','riktn. °'],['color','färg']],bench:[['x','x'],['z','z']],table:[['x','x'],['y','överkant']],board:[['x','x'],['y','underkant']],cab:[['x','x'],['y','underkant']],shelf:[['x','x'],['y','skena underkant'],['bk','konsol över skenans underkant']],outlet:[['x','x'],['y','höjd']],rad:[['z','start z'],['d','längd'],['w','djup'],['h','höjd']],win:[['y','underkant'],['h','höjd'],['z','start z'],['d','längd']],post:[['x','x'],['z','z']]};
-function dimsText(it){if(it.kind==='rad')return it.w+' djup × '+it.d+' längd × '+it.h+' hög (uppskattat)';if(it.kind==='win')return 'underkant ca '+it.y+', höjd ca '+it.h+' cm (uppskattat)';if(it.kind==='veh')return it.L+' × '+it.Wd+' × '+it.hh+' cm';if(it.kind==='mat')return it.w+' × '+it.d+' cm';if(it.kind==='shelf')return it.w+' × '+it.d+' × '+it.t+' cm '+it.wood+', skenor '+it.h+' cm, hylla topp '+(Math.round(sTop(it)*10)/10);
+function dimsText(it){if(it.kind==='rad')return it.w+' djup × '+it.d+' längd × '+it.h+' hög';if(it.kind==='win')return 'underkant ca '+it.y+', höjd ca '+it.h+' cm';if(it.kind==='veh')return it.L+' × '+it.Wd+' × '+it.hh+' cm';if(it.kind==='mat')return it.w+' × '+it.d+' cm';if(it.kind==='shelf')return it.w+' × '+it.d+' × '+it.t+' cm '+it.wood+', skenor '+it.h+' cm, hylla topp '+(Math.round(sTop(it)*10)/10);
   if(it.kind==='outlet')return 'ca '+it.y+' cm över golv';return it.w+' × '+it.d+' × '+it.h+' cm'}
 function buildPanel(){
   var p=document.getElementById('panel'),h='<div class="status" id="status"></div>',g='';
@@ -1545,13 +1545,13 @@ function setView(v){
 function buildTools(){
   var t=document.getElementById('tools'),h='';
   if(state.view==='3d'){[['entrance','Från ingången'],['plan','Ovanifrån'],['wall','Mot väggen'],['left','Från vänster']].forEach(function(c){h+='<button data-cam="'+c[0]+'">'+c[1]+'</button>'});
-    h+='<button data-tg="led" aria-pressed="'+state.led+'">LED-belysning</button><button data-tg="ceil" aria-pressed="'+state.ceil+'">Tak</button>'}
+    h+='<button data-tg="led" data-led="shA" aria-pressed="'+state.leds.shA+'">LED nedre hylla</button><button data-tg="led" data-led="shB" aria-pressed="'+state.leds.shB+'">LED övre hylla</button><button data-tg="ceil" aria-pressed="'+state.ceil+'">Tak</button>'}
   else h+='<button data-tg="dims" aria-pressed="'+state.dims+'">Mått</button>';
   h+='<button data-reset="1">Återställ placering</button>';t.innerHTML=h}
 function bindTools(){
   document.getElementById('tools').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
     if(b.dataset.cam)camPreset(b.dataset.cam);
-    else if(b.dataset.tg==='led'){state.led=!state.led;b.setAttribute('aria-pressed',state.led);updateLEDs()}
+    else if(b.dataset.tg==='led'){var lk=b.dataset.led;state.leds[lk]=!state.leds[lk];b.setAttribute('aria-pressed',state.leds[lk]);updateLEDs()}
     else if(b.dataset.tg==='ceil'){state.ceil=!state.ceil;b.setAttribute('aria-pressed',state.ceil);ceilMesh.visible=state.ceil;dirty=true}
     else if(b.dataset.tg==='dims'){state.dims=!state.dims;b.setAttribute('aria-pressed',state.dims);render2d()}
     else if(b.dataset.reset){try{localStorage.removeItem(KEY)}catch(x){}
